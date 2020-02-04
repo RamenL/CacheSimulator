@@ -1,16 +1,19 @@
-from Line import Line
+from Cache import Cache
 
-trace_file = "TRACE1.DAT"
-f=open(trace_file, "rb")
-binary_file = list(f.read())
-
-stack = []
-queue = []
+trace_file = "TRACE1.DAT" #trace_file path
 L=3
-N=32
-K=2
+KN=64 #cache_size
+K=2 #set_size
+methodology = "FIFO" #LRU or FIFO
 
-def find_tag_amount(n):
+N = int(KN/K)
+NEXT = 0
+f=open(trace_file, "rb") # read file in binary format
+binary_file = list(f.read())
+stack = [] # stack to reverse binary -> address
+queue = [] # store final addresses
+
+def find_tag_amount(n): # find tag length from number of set (N)
     tag_table = {4:2, 8:3, 16:4, 32:5, 64:6, 128:7, 256:8} #refactor this
     return tag_table[n]
 
@@ -21,7 +24,7 @@ def format_byte(byte):
         byte = byte[2:4]
     return byte
 
-def stack_to_word(stack):
+def stack_to_word(stack): #pops stack elements to format address
     word = ""
     while stack:
         byte = str(stack.pop())
@@ -29,18 +32,18 @@ def stack_to_word(stack):
     return word
 
 
-for i in binary_file:
+for i in binary_file: # adds bytes to stack. When stack limit is reached, calls stack_to_word and resets stack
     stack.append(hex(i))
     if len(stack) == L:
         queue.append(stack_to_word(stack))
-        stack = [] #reset stack
-        #break
-    #insert somewhere
-
+        stack = [] #reset to empty stack
 f.close()
 
-#need hashmap of mapping from n to its counterpart
+cache = Cache(N, K, find_tag_amount(N), methodology) # cache object
 
-line = Line(queue.pop(), find_tag_amount(N))
-print(line.tag_value)
-#q -> cache
+q_len = len(queue)
+while queue:
+    cache.insert(queue.pop(NEXT)) #insert into cache
+
+cache.cache_print()
+print("Miss Rate for " +  trace_file + " (Method: " + str(methodology) + ", KN:" + str(KN) + ", N: " + str(N) + "): " + str((q_len - cache.num_of_hits)/q_len))
