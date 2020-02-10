@@ -28,5 +28,5 @@ class Set():
     def set_print(self):
         set_address = ""
         for current in self.line_list:
-            set_address = set_address + current + ", "
+            set_address = set_address + str(current) + ", "
         return set_address

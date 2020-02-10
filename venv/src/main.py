@@ -1,10 +1,10 @@
 from Cache import Cache
 
-trace_file = "TRACE1.DAT" #trace_file path
+trace_file = "TRACE2.DAT" #trace_file path
 L=3
-KN=64 #cache_size
-K=2 #set_size
-methodology = "FIFO" #LRU or FIFO
+KN=256 #cache_size
+K=16 #set_size
+methodology = "LRU" #LRU or FIFO
 
 N = int(KN/K)
 NEXT = 0
